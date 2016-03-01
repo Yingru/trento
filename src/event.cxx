@@ -52,7 +52,8 @@ Event::Event(const VarMap& var_map)
       xymax_(.5*nsteps_*dxy_),
       TA_(boost::extents[nsteps_][nsteps_]),
       TB_(boost::extents[nsteps_][nsteps_]),
-      TR_(boost::extents[nsteps_][nsteps_]) {
+      TR_(boost::extents[nsteps_][nsteps_]),
+      TATB_(boost::extents[nsteps_][nsteps_]) {
   // Choose which version of the generalized mean to use based on the
   // configuration.  The possibilities are defined above.  See the header for
   // more information.
@@ -82,6 +83,7 @@ void Event::compute(const Nucleus& nucleusA, const Nucleus& nucleusB,
   compute_nuclear_thickness(nucleusA, profile, TA_);
   compute_nuclear_thickness(nucleusB, profile, TB_);
   compute_reduced_thickness_();
+  compute_TATB_thickness();
   compute_observables();
 }
 
@@ -166,6 +168,18 @@ void Event::compute_reduced_thickness(GenMean gen_mean) {
   multiplicity_ = dxy_ * dxy_ * sum;
   ixcm_ = ixcm / sum;
   iycm_ = iycm / sum;
+}
+
+void Event::compute_TATB_thickness() {
+  double sum = 0.;
+
+  for (int iy = 0; iy < nsteps_; ++iy) {
+    for (int ix = 0; ix < nsteps_; ++ix) {
+      auto t = norm_ * (TA_[iy][ix] * TB_[iy][ix]);
+      TATB_[iy][ix] = t;
+      sum += t;
+    }
+  }
 }
 
 void Event::compute_observables() {

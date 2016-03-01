@@ -67,7 +67,7 @@ void HDF5Writer::operator()(
 
   // Cache a reference to the event grid -- will need it several times.
   const auto& grid = event.reduced_thickness_grid();
-
+  
   // Define HDF5 datatype and dataspace to match the grid.
   const auto& datatype = h5_type<Event::Grid::element>();
   constexpr auto num_dims = Event::Grid::dimensionality;
@@ -162,6 +162,20 @@ void write_text_file(const fs::path& output_dir, int width,
 
     // Write the last element and a linebreak.
     ofs << *iter << '\n';
+  }
+
+// modified by Yingru: output another file which contains TA*TB, TR
+  std::ostringstream padded_fname_HQ{};
+  padded_fname_HQ << std::setw(width) << std::setfill('0') << num << ".TATB.dat";
+  fs::ofstream ofs_HQ{output_dir / padded_fname_HQ.str()};
+  
+  for (const auto& row_HQ : event.TATB_thickness_grid()) {
+    auto&& iter_HQ = row_HQ.begin();
+    do {
+      ofs_HQ << *iter_HQ << ' ';
+    } while (++iter_HQ != --row_HQ.end());
+    
+    ofs_HQ << *iter_HQ << '\n';
   }
 }
 

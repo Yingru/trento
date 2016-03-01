@@ -81,6 +81,11 @@ class Event {
   const Grid& reduced_thickness_grid() const
   { return TR_; }
 
+  /// Yingru: return the thickness_function_grid 
+  const Grid& TATB_thickness_grid() const
+  { return TATB_;}
+  // end of Yingru modify
+
  private:
   /// Compute a nuclear thickness function (TA or TB) onto a grid for a given
   /// nucleus and nucleon profile.  This destroys any data previously contained
@@ -94,6 +99,7 @@ class Event {
   template <typename GenMean>
   void compute_reduced_thickness(GenMean gen_mean);
 
+  void compute_TATB_thickness();
   /// An instantation of compute_reduced_thickness<GenMean> with a bound
   /// argument for GenMean.  Created in the ctor.  Implemented this way to
   /// allow the compiler to fully inline the GenMean function and only require a
@@ -116,7 +122,7 @@ class Event {
   const double xymax_;
 
   /// Nuclear thickness grids TA, TB and reduced thickness grid TR.
-  Grid TA_, TB_, TR_;
+  Grid TA_, TB_, TR_, TATB_;
 
   /// Center of mass coordinates in "units" of grid index (not fm).
   double ixcm_, iycm_;
