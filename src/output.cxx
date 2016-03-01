@@ -139,14 +139,15 @@ void write_text_file(const fs::path& output_dir, int width,
   fs::ofstream ofs{output_dir / padded_fname.str()};
 
   // Write a commented header of event properties as key = value pairs.
-  ofs << std::setprecision(10)
-      << "# event "   << num                  << '\n'
-      << "# b     = " << impact_param         << '\n'
-      << "# npart = " << event.npart()        << '\n'
-      << "# mult  = " << event.multiplicity() << '\n';
+  // By Yingru (remove the header)
+ // ofs << std::setprecision(10)
+ //     << "# event "   << num                  << '\n'
+ //     << "# b     = " << impact_param         << '\n'
+ //     << "# npart = " << event.npart()        << '\n'
+ //     << "# mult  = " << event.multiplicity() << '\n';
 
-  for (const auto& ecc : event.eccentricity())
-    ofs << "# e" << ecc.first << "    = " << ecc.second << '\n';
+ // for (const auto& ecc : event.eccentricity())
+ //   ofs << "# e" << ecc.first << "    = " << ecc.second << '\n';
 
   // Write IC profile as a block grid.  Use C++ default float format (not
   // fixed-width) so that trailing zeros are omitted.  This significantly
