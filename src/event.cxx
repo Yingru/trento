@@ -3,7 +3,6 @@
 // MIT License
 
 #include "event.h"
-
 #include <algorithm>
 #include <cmath>
 
@@ -164,7 +163,6 @@ void Event::compute_reduced_thickness(GenMean gen_mean) {
       iycm += t * static_cast<double>(iy);
     }
   }
-
   multiplicity_ = dxy_ * dxy_ * sum;
   ixcm_ = ixcm / sum;
   iycm_ = iycm / sum;

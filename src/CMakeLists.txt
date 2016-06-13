@@ -17,4 +17,4 @@ set_source_files_properties(${MAIN} PROPERTIES
 add_executable(${PROJECT_NAME} ${MAIN})
 target_link_libraries(${PROJECT_NAME} ${LIBRARY_NAME} ${Boost_LIBRARIES} ${HDF5_LIBRARIES})
 
-install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+install(TARGETS ${PROJECT_NAME} DESTINATION ${PROJECT_NAME})

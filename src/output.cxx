@@ -153,6 +153,7 @@ void write_text_file(const fs::path& output_dir, int width,
   // fixed-width) so that trailing zeros are omitted.  This significantly
   // increases output speed and saves disk space since many grid elements are
   // zero.
+
   for (const auto& row : event.reduced_thickness_grid()) {
     auto&& iter = row.begin();
     // Write all row elements except the last with a space delimiter afterwards.
@@ -164,7 +165,9 @@ void write_text_file(const fs::path& output_dir, int width,
     ofs << *iter << '\n';
   }
 
-// modified by Yingru: output another file which contains TA*TB, TR
+// modified by Yingru: output another file which contains TA*TB, 
+/* for this specific case that p = 0, TR_ = sqrt(TA_ * TB_), there's no necessary to 
+output another file again 
   std::ostringstream padded_fname_HQ{};
   padded_fname_HQ << std::setw(width) << std::setfill('0') << num << ".TATB.dat";
   fs::ofstream ofs_HQ{output_dir / padded_fname_HQ.str()};
@@ -177,6 +180,7 @@ void write_text_file(const fs::path& output_dir, int width,
     
     ofs_HQ << *iter_HQ << '\n';
   }
+*/  
 }
 
 // Determine if a filename is an HDF5 file based on the extension.

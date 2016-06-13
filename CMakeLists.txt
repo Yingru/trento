@@ -4,7 +4,7 @@ project(trento CXX)
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-std=c++11" CXX11)
 if(NOT CXX11)
-  message(FATAL_ERROR "Your compiler does not support C++11")
+  message(FATAL_ERROR "Your compiler does not support C++12")
 endif()
 
 # Find and use Boost.
