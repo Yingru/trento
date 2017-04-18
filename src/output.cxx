@@ -135,9 +135,7 @@ void write_text_file(const fs::path& output_dir, int width,
   // Open a numbered file in the output directory.
   // Pad the filename with zeros.
   std::ostringstream padded_fname{};
-//  padded_fname << std::setw(width) << std::setfill('0') << num << ".dat";
-// by Yingru, change the name style from 00.dat to 0.dat
-  padded_fname << num << ".dat";
+  padded_fname <<  num << ".dat";
   fs::ofstream ofs{output_dir / padded_fname.str()};
 
   // Write a commented header of event properties as key = value pairs.
@@ -166,6 +164,20 @@ void write_text_file(const fs::path& output_dir, int width,
     // Write the last element and a linebreak.
     ofs << *iter << '\n';
   }
+
+// modified by Yingru: output event-info as well
+  std::ostringstream padded_fname_info{};
+  padded_fname_info << num << ".info.dat";
+  fs::ofstream ofs_info{output_dir / padded_fname_info.str()};
+
+  ofs_info << std::setprecision(10)
+           << "event " << num           << '\n'
+           << "b     = "<<impact_param  << '\n'
+           << "npart = "<<event.npart() << '\n'
+           << "mult  = "<< event.multiplicity() << '\n';
+  for (const auto& ecc : event.eccentricity())
+    ofs_info << "eccen = " << std::setprecision(10)     << ecc.second << '\n' ;
+
 
 // modified by Yingru: output another file which contains TA*TB, 
 /* for this specific case that p = 0, TR_ = sqrt(TA_ * TB_), there's no necessary to 
