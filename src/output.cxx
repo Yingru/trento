@@ -48,19 +48,25 @@ void write_text_file(const fs::path& output_dir, int width,
   // Open a numbered file in the output directory.
   // Pad the filename with zeros.
   std::ostringstream padded_fname{};
-  padded_fname << std::setw(width) << std::setfill('0') << num << ".dat";
+  //padded_fname << std::setw(width) << std::setfill('0') << num << ".dat";
+  padded_fname << num << ".dat";
   fs::ofstream ofs{output_dir / padded_fname.str()};
+
+  std::ostringstream padded_fname_info{};
+  padded_fname_info << num << ".event.info";
+  fs::ofstream of_event{output_dir / padded_fname_info.str()};
+
 
   if (header) {
     // Write a commented header of event properties as key = value pairs.
-    ofs << std::setprecision(10)
+    of_event << std::setprecision(10)
         << "# event "   << num                  << '\n'
         << "# b     = " << impact_param         << '\n'
         << "# npart = " << event.npart()        << '\n'
         << "# mult  = " << event.multiplicity() << '\n';
 
     for (const auto& ecc : event.eccentricity())
-      ofs << "# e" << ecc.first << "    = " << ecc.second << '\n';
+      of_event << "# e" << ecc.first << "    = " << ecc.second << '\n';
   }
 
   // Write IC profile as a block grid.  Use C++ default float format (not
