@@ -89,6 +89,12 @@ class Event {
 	  return TR_;
   }
 
+  // the entropy density grid in the mid-rapidity (eta=0)
+  const Grid3D& density_grid_midrap() const{
+    return TR_;
+  }
+
+
  private:
   /// Compute a nuclear thickness function (TA or TB) onto a grid for a given
   /// nucleus and nucleon profile.  This destroys any data previously contained

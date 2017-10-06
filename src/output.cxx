@@ -56,6 +56,9 @@ void write_text_file(const fs::path& output_dir, int width,
   padded_fname_info << num << ".event.info";
   fs::ofstream of_event{output_dir / padded_fname_info.str()};
 
+  std::ostringstream padded_fname_midrap{};
+  padded_fname_midrap << num << "_mid.dat";
+  fs::ofstream ofs_mid{output_dir/ padded_fname_midrap.str()};
 
   if (header) {
     // Write a commented header of event properties as key = value pairs.
@@ -87,8 +90,18 @@ void write_text_file(const fs::path& output_dir, int width,
     }
 	if (!is3d) ofs << std::endl;
   }
-}
 
+  
+  for (const auto& slice : event.density_grid_midrap()) {
+    for (const auto& row : slice) {
+      for (const auto& item: row) {
+        ofs_mid << item << " ";
+      }
+    }
+    ofs_mid << std::endl;
+  }
+
+}
 #ifdef TRENTO_HDF5
 
 /// Simple functor to write many events to an HDF5 file.
