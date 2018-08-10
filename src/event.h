@@ -14,6 +14,7 @@
 #include <boost/multi_array.hpp>
 
 #include "fwd_decl.h"
+#include "nucleon.h"
 
 namespace trento {
 
@@ -59,6 +60,10 @@ class Event {
   /// Number of nucleon participants.
   const int& npart() const
   { return npart_; }
+   
+  // YX: Number of binary collision
+  const int& ncoll() const
+  { return ncoll_; }
 
   /// \rst
   /// Multiplicity---or more specifically, total entropy.  May be interpreted
@@ -80,6 +85,18 @@ class Event {
   /// The reduced thickness grid as a square two-dimensional array.
   const Grid& reduced_thickness_grid() const
   { return TR_; }
+  
+  // WK: TAB grid for harf process vertex sampling
+  const Grid& TAB_grid() const
+  { return TAB_; }
+
+  // WK grid step
+  const double& dxy() const
+  { return dxy_; }
+
+  // WK: clear and accumulant TAB
+  void clear_TAB(void);
+  void accumulate_TAB(Nucleon& A, Nucleon& B, NucleonProfile& profile);
 
  private:
   /// Compute a nuclear thickness function (TA or TB) onto a grid for a given
@@ -116,13 +133,16 @@ class Event {
   const double xymax_;
 
   /// Nuclear thickness grids TA, TB and reduced thickness grid TR.
-  Grid TA_, TB_, TR_;
+  Grid TA_, TB_, TR_, TAB_;
 
   /// Center of mass coordinates in "units" of grid index (not fm).
   double ixcm_, iycm_;
 
   /// Number of participants.
   int npart_;
+
+  /// WK; number of binary collisions
+  int ncoll_;
 
   /// Multiplicity (total entropy).
   double multiplicity_;

@@ -109,7 +109,18 @@ double Collider::sample_impact_param() {
     // Check each nucleon-nucleon pair.
     for (auto&& A : *nucleusA_) {
       for (auto&& B : *nucleusB_) {
-        collision = nucleon_profile_.participate(A, B) || collision;
+        //collision = nucleon_profile_.participate(A, B) || collision;
+        bool AB_collide = nucleon_profile_.participate(A, B);
+
+        // only init Ncoll and Ncoll density at the first binary collision
+        if (AB_collide && (!collision)) event_.clear_TAB();
+
+        // update collision flag
+        collision = AB_collide || collision;
+
+        // to calculate binary collision density, each colision contribute independently its Tpp,
+        // it cals the event object to accumulate Tp to the Ncoll density 
+        if (AB_collide) event_.accumulate_TAB(A, B, nucleon_profile_);
       }
     }
   } while (!collision);

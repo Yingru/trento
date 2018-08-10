@@ -52,7 +52,8 @@ Event::Event(const VarMap& var_map)
       xymax_(.5*nsteps_*dxy_),
       TA_(boost::extents[nsteps_][nsteps_]),
       TB_(boost::extents[nsteps_][nsteps_]),
-      TR_(boost::extents[nsteps_][nsteps_]) {
+      TR_(boost::extents[nsteps_][nsteps_]),
+      TAB_(boost::extents[nsteps_][nsteps_]) {
   // Choose which version of the generalized mean to use based on the
   // configuration.  The possibilities are defined above.  See the header for
   // more information.
@@ -99,6 +100,61 @@ inline const T& clip(const T& value, const T& min, const T& max) {
 }
 
 }  // unnamed namespace
+
+
+// clear Ncoll density table
+void Event::clear_TAB(void){
+    ncoll_ = 0;
+    for (int iy=0; iy < nsteps_; ++iy){
+        for (int ix=0; ix<nsteps_; ++ix) {
+            TAB_[iy][ix] = 0.;
+        }
+    }
+}
+
+
+// accumulate Tpp to Ncoll density table
+void Event::accumulate_TAB(Nucleon& A, Nucleon& B, NucleonProfile& profile) {
+    ncoll_ ++;
+    // the location of A and B nucleon
+    double xA = A.x() + xymax_ , yA = A.y() + xymax_;
+    double xB = B.x() + xymax_,  yB = B.y() + xymax_;
+
+    // impact parameter squared of this binary collision
+    double bpp_sq = std::pow(xA - xB, 2) + std::pow(yA - yB, 2);
+
+    // the mid point of A and B
+    double x = (xA + xB)/2;
+    double y = (yA + yB)/2;
+
+    // the max radius of Tpp
+    const double r=profile.radius();
+    int ixmin = clip(static_cast<int>((x-r)/dxy_), 0, nsteps_-1);
+    int iymin = clip(static_cast<int>((y-r)/dxy_), 0, nsteps_ -1);
+    int ixmax = clip(static_cast<int>((x+r)/dxy_), 0, nsteps_ -1);
+    int iymax = clip(static_cast<int>((y+r)/dxy_), 0, nsteps_ -1);
+
+    // add Tpp to Ncoll density
+    auto norm_Tpp = profile.norm_Tpp(bpp_sq);
+    for (auto iy=iymin; iy<=iymax; ++iy) {
+        double dysqA = std::pow(yA - (static_cast<double>(iy)+.5)*dxy_, 2);
+        double dysqB = std::pow(yB - (static_cast<double>(iy)+.5)*dxy_, 2);
+
+        for (auto ix=ixmin; ix<=ixmax; ++ix) {
+            double dxsqA = std::pow(xA - (static_cast<double>(ix)+.5)*dxy_, 2);
+            double dxsqB = std::pow(xB - (static_cast<double>(ix)+.5)*dxy_, 2);
+
+            // Ncoll density doesnot flucutate, we use the determinstic_thickness function
+            // where the gamma flucation are turned of
+            // since the binary collision already happened, the binary collision density should
+            // be normalied to one.
+            TAB_[iy][ix] += profile.deterministic_thickness(dxsqA + dysqA)
+                                * profile.deterministic_thickness(dxsqB + dysqB) 
+                                / norm_Tpp;
+        }
+    }
+}
+
 
 void Event::compute_nuclear_thickness(
     const Nucleus& nucleus, NucleonProfile& profile, Grid& TX) {
