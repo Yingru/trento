@@ -25,7 +25,9 @@
 
 namespace trento {
 
-NucleusPtr Nucleus::create(const std::string& species, double nucleon_dmin) {
+NucleusPtr Nucleus::create(const std::string& species, double nucleon_dmin, int seed) {
+  //random::engine.seed(static_cast<random::Engine::result_type>(seed));
+ 
   // W-S params ref. in header
   // XXX: remember to add new species to the help output in main() and the readme
   if (species == "p")
@@ -182,7 +184,11 @@ WoodsSaxonNucleus::WoodsSaxonNucleus(
       a_(a),
       woods_saxon_dist_(1000, 0., R + 10.*a,
         [R, a](double r) { return r*r/(1.+std::exp((r-R)/a)); })
-{}
+{
+    // set random seed here
+    // auto seed = 0;
+    // random::engine.seed(static_cast<random::Engine::result_type>(seed));
+}
 
 /// Return something a bit smaller than the true maximum radius.  The
 /// Woods-Saxon distribution falls off very rapidly (exponentially), and since

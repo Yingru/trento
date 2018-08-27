@@ -5,6 +5,7 @@
 #include "collider.h"
 
 #include <cmath>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -24,7 +25,11 @@ NucleusPtr create_nucleus(const VarMap& var_map, std::size_t index) {
   const auto& species = var_map["projectile"]
                         .as<std::vector<std::string>>().at(index);
   const auto& nucleon_dmin = var_map["nucleon-min-dist"].as<double>();
-  return Nucleus::create(species, nucleon_dmin);
+  auto seed = var_map["random-seed"].as<int64_t>();
+  if (seed < 0) {
+    seed = rand();
+ }
+  return Nucleus::create(species, nucleon_dmin, seed);
 }
 
 // Determine the maximum impact parameter.  If the configuration contains a
@@ -75,6 +80,22 @@ Collider::Collider(const VarMap& var_map)
 // See header for explanation.
 Collider::~Collider() = default;
 
+void write_nucleus_stream(std::ostream& os, const Nucleus& nucleus) {
+  using std::fixed;
+  using std::setprecision;
+  using std::setw;
+
+  for (const auto nucleon : nucleus) {
+    os << setprecision(6)
+       << setw(10)      << nucleon.x()
+       << setw(10)      << nucleon.y()
+       << setw(10)      << nucleon.z()
+       << fixed
+       << '\n';
+  }
+}
+
+
 void Collider::run_events() {
   // The main event loop.
   for (int n = 0; n < nevents_; ++n) {
@@ -88,6 +109,8 @@ void Collider::run_events() {
 
     // Write event data.
     output_(n, b, event_);
+	write_nucleus_stream(std::cout, *nucleusA_);
+	write_nucleus_stream(std::cout, *nucleusB_);
   }
 }
 
