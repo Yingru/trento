@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include <boost/filesystem/fstream.hpp>
 #include <boost/program_options/variables_map.hpp>
 
 #include "fwd_decl.h"
@@ -96,8 +97,27 @@ void write_nucleus_stream(std::ostream& os, const Nucleus& nucleus) {
 }
 
 
+void write_nucleus_text_file(int width, 
+    int num, const Nucleus& nucleus, std::string ID)
+{
+    std::ostringstream padded_fname{};
+    padded_fname << std::setw(width) << std::setfill('0') << num << ID << ".dat";
+    fs::ofstream fout{padded_fname.str()};
+
+    for (const auto nucleon : nucleus) {
+      fout << std::setprecision(6)
+         << std::setw(10)      << nucleon.x()
+         << std::setw(10)      << nucleon.y()
+         << std::setw(10)      << nucleon.z()
+         << std::fixed
+         << '\n';
+  }
+
+}
+
 void Collider::run_events() {
   // The main event loop.
+  auto width = static_cast<int>(std::ceil(std::log10(nevents_)));
   for (int n = 0; n < nevents_; ++n) {
     // Sampling the impact parameter also implicitly prepares the nuclei for
     // event computation, i.e. by sampling nucleon positions and participants.
@@ -109,8 +129,8 @@ void Collider::run_events() {
 
     // Write event data.
     output_(n, b, event_);
-	write_nucleus_stream(std::cout, *nucleusA_);
-	write_nucleus_stream(std::cout, *nucleusB_);
+    write_nucleus_text_file(width, n, *nucleusA_, "_nucleusA");
+    write_nucleus_text_file(width, n, *nucleusB_, "_nucleusB");
   }
 }
 
